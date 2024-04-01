@@ -1,3 +1,4 @@
+import 'package:chat_app/chat_screen.dart';
 import 'package:chat_app/consts.dart';
 import 'package:chat_app/login_screen.dart';
 import 'package:chat_app/models/user_model.dart';
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isloading = false;
   GetIt getIt = GetIt.instance;
   late AuthServices _authServices;
   late DatabaseServices _databaseServices;
@@ -28,9 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        // centerTitle: true,
         title: Padding(
-          padding: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.only(top: 30),
           child: Text(
             'live Chat App',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -77,17 +79,42 @@ class _HomeScreenState extends State<HomeScreen> {
             return Center(child: Text('Something went wrong'));
           }
           if (snapshot.hasData) {
+            final users = snapshot.data.docs;
             return ListView.builder(
-                itemCount: snapshot.data.docs.length,
+                itemCount: users.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        // Handle chat creation
+                        _databaseServices
+                            .checkChatExist(
+                                _authServices.user!.uid, users[index]['uid'])
+                            .then((value) async => {
+                                  if (!value)
+                                    {
+                                      // Handle chat creation
+                                      print('chat not exist , creating chat'),
+                                      await _databaseServices.createChat(
+                                          _authServices.user!.uid,
+                                          users[index]['uid'])
+                                    },
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatScreen(
+                                                chatUser: users[index].data(),
+                                              ))),
+                                });
+                      },
                       child: ListTile(
-                          title: Text(snapshot.data.docs[index]['name']),
+                          dense: false,
+                          title: Text(users[index]['name']),
                           leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                snapshot.data.docs[index]['pfpURL']),
+                            backgroundImage:
+                                NetworkImage(users[index]['pfpURL']),
                             radius: 30,
                           )),
                     ),

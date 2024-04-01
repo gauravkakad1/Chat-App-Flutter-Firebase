@@ -5,6 +5,7 @@ import 'package:chat_app/login_screen.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/services/auth_services.dart';
 import 'package:chat_app/services/database_services.dart';
+import 'package:chat_app/services/media_services.dart';
 import 'package:chat_app/services/storage_services.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -35,6 +36,7 @@ class _SignupScreenState extends State<SignupScreen> {
   GetIt getIt = GetIt.instance;
   late AuthServices _authServices;
   late StorageServices _storageServices;
+  late MediaServices _mediaServices;
   late DatabaseServices _databaseServices;
   bool isloading = false;
   @override
@@ -43,6 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
     _authServices = getIt.get<AuthServices>();
     _storageServices = getIt.get<StorageServices>();
     _databaseServices = getIt.get<DatabaseServices>();
+    _mediaServices = getIt.get<MediaServices>();
   }
 
   @override
@@ -102,10 +105,11 @@ class _SignupScreenState extends State<SignupScreen> {
           SizedBox(height: 10),
           ElevatedButton(
             onPressed: () async {
-              final ImagePicker _picker = ImagePicker();
-              final XFile? image = await _picker.pickImage(
-                source: ImageSource.gallery,
-              );
+              // final ImagePicker _picker = ImagePicker();
+              // final XFile? image = await _picker.pickImage(
+              //   source: ImageSource.gallery,
+              // );
+              final image = await _mediaServices.pickImage();
               if (image != null) {
                 setState(() {
                   _image = image;

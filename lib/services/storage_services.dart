@@ -21,4 +21,20 @@ class StorageServices {
     }
     return null;
   }
+
+  Future<String?> uploadChatImage(
+      {required File imageFile, required String chatId}) async {
+    try {
+      final Reference reference = _firebaseStorage
+          .ref('chats/images/$chatId')
+          .child(
+              '${DateTime.now().millisecondsSinceEpoch}${p.extension(imageFile.path)}');
+      final UploadTask uploadTask = reference.putFile(imageFile);
+      final TaskSnapshot taskSnapshot = await uploadTask;
+      return taskSnapshot.ref.getDownloadURL();
+    } catch (e) {
+      print(e);
+    }
+    return null;
+  }
 }
