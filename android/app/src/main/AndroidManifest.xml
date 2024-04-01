@@ -4,7 +4,7 @@
 
     <application
         android:name="io.flutter.app.FlutterMultiDexApplication"
-        android:label="chat_app"
+        android:label="Chat App"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
